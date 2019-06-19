@@ -1,0 +1,63 @@
+import pandas as pd
+cr=pd.read_csv(r"C:\Users\AKHIL\Desktop\R csv\CreditRisk.csv") ##### reading the file #########################
+cr.head()
+cr.shape
+cr.describe(include = 'all')
+cr=cr.iloc[:,1:13]################run only 1 time or will lose data...keep checking cr.shape
+cr.head()
+cr.shape
+print(cr.Loan_Status.value_counts())### for how many people loan was approved and not approved ####
+
+
+############################################ one hot encoding ############################################################
+
+cr.Gender.replace({"Male":1,"Female":0},inplace=True)
+cr.Married.replace({"No":0,"Yes":1},inplace=True)
+cr.Education.replace({"Graduate":1,"Not Graduate":0},inplace=True)#
+cr.Self_Employed.replace({"No":0,"Yes":1},inplace=True)
+cr.Property_Area.replace({"Semiurban":1,"Urban":2,"Rural":3},inplace=True)
+cr.Loan_Status.replace({"Y":1,"N":0},inplace=True)
+cr.head()
+
+######################################### CONVERTING TO CATEGORy############################################################
+
+cr.Gender=cr.Gender.astype('category')
+cr.Married=cr.Married.astype('category')
+cr.Education=cr.Education.astype('category')
+cr.Self_Employed=cr.Self_Employed.astype('category')
+cr.Property_Area=cr.Property_Area.astype('category')
+cr.Loan_Status=cr.Loan_Status.astype('category')
+cr.describe(include='all')
+
+
+###cr.isna().sum() count of na values
+
+cr=cr.dropna()
+cr.shape
+cr.head()
+cr_x=cr.iloc[:,[5,6,7,9,10]] ############### storing the independent variable in x ###############
+print(cr_x.head())
+cr_y=cr.iloc[:,-1]################ storing dependent variable in y #####################
+print(cr_x.head())
+cr_y.head()
+
+import sklearn
+from sklearn.model_selection import train_test_split
+cr_x_train,cr_x_test,cr_y_train,cr_y_test=train_test_split(cr_x,cr_y,test_size=.2,random_state=501)
+
+from sklearn.ensemble import RandomForestClassifier
+random1=RandomForestClassifier(100)
+random1.fit(cr_x_train,cr_y_train)
+pred_value12=random1.predict(cr_x_test)
+
+from sklearn.metrics import confusion_matrix
+com = confusion_matrix(pred_value12,cr_y_test)
+com
+
+tab11=confusion_matrix(pred_value12,cr_y_test)
+tab11
+
+accuracy=sum(tab11.diagonal())/tab11.sum()#####  to get the accuracy  ######################## 
+print("accuracy of the model is ::",accuracy)
+
+random1.feature_importances_ 
